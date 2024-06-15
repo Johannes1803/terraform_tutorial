@@ -5,6 +5,9 @@ provider "aws" {
     profile = "default"
 
 }
+variable "server_port" {
+    default = 8080
+}
 
 resource "aws_instance" "example" {
     ami = "ami-0fb653ca2d3203ac1"
@@ -21,9 +24,7 @@ resource "aws_instance" "example" {
     }  
 }
 
-variable "server_port" {
-    default = 8080
-}
+
 resource "aws_security_group" "instance" {
     name = "terraform-example-instance"
     ingress {
@@ -33,4 +34,8 @@ resource "aws_security_group" "instance" {
         cidr_blocks = ["0.0.0.0/0"]
     }
   
+}
+
+output "public_ip" {
+    value = aws_instance.example.public_ip
 }
