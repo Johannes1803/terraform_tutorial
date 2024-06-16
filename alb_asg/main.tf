@@ -5,13 +5,11 @@ provider "aws" {
     profile = "default"
 
 }
-variable "server_port" {
-    default = 8080
-}
 
 data "aws_vpc" "default" {
     default = true
 }
+
 data "aws_subnets" "default" {
     filter {
         name   = "vpc-id"
@@ -21,7 +19,7 @@ data "aws_subnets" "default" {
 }
 
 resource "aws_lb" "example" {
-    name = "terraform-asg-example"
+    name = var.alb_name
     load_balancer_type = "application"
     subnets = data.aws_subnets.default.ids  
     security_groups = [aws_security_group.alb.id]
@@ -111,7 +109,7 @@ resource "aws_launch_configuration" "example" {
 
 }
 resource "aws_security_group" "instance" {
-    name = "terraform-example-instance"
+    name = var.instance_security_group_name
     ingress {
         from_port   = var.server_port
         to_port     = var.server_port
@@ -122,7 +120,7 @@ resource "aws_security_group" "instance" {
 }
 
 resource "aws_security_group" "alb" {
-    name = "terraform-example-alb"
+    name = var.alb_security_group_name
 
     ingress {
         from_port   = 80
@@ -137,9 +135,4 @@ resource "aws_security_group" "alb" {
         cidr_blocks = ["0.0.0.0/0"]
     }
   
-}
-
-output "alb_dns_name" {
-    value = aws_lb.example.dns_name
-    description = "The domain name of the LB"
 }
