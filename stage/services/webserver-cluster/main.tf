@@ -1,3 +1,22 @@
+terraform {
+  required_version = ">= 1.0.0, < 2.0.0"
+
+  backend "s3" {
+    bucket = "tf-up-and-running-bucket"
+    key    = "stage/services/webserver-cluster/terraform.tfstate"
+    region = "us-east-2"
+
+    dynamodb_table = "tf-up-and-running-lock"
+    encrypt        = true
+  }
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+  }
+}
 provider "aws" {
   region                   = "us-east-2"
   shared_config_files      = ["~/.aws/config"]
@@ -5,6 +24,7 @@ provider "aws" {
   profile                  = "default"
 
 }
+
 
 data "aws_vpc" "default" {
   default = true
